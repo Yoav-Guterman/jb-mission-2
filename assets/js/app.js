@@ -93,14 +93,10 @@
 
     const renderLanguageTable = languageTable => document.getElementById('languageTable').innerHTML = languageTable
 
-    document.getElementById('myForm').addEventListener('submit', async (event) => {
+    const handleCountryData = async (url) => {
         try {
-
-            event.preventDefault()
-
-            const search = document.getElementById('searchCountry').value
             // get data
-            const countries = await getData(`https://restcountries.com/v3.1/name/${search}`)
+            const countries = await getData(url)
 
             // generate html
             const basicStatsHTML = generateBasicStatsPerCountryTable(countries)
@@ -113,33 +109,20 @@
             renderPopulationTable(populationTable)
             renderRegionTable(regionTable)
             renderLanguageTable(languageTable)
-
         } catch (e) {
             console.warn(e)
         }
+    }
+
+    // Event listeners
+    document.getElementById('myForm').addEventListener('submit', async (event) => {
+        event.preventDefault()
+        const search = document.getElementById('searchCountry').value
+        await handleCountryData(`https://restcountries.com/v3.1/name/${search}`)
     })
 
     document.getElementById('all').addEventListener('click', async (event) => {
-        try {
-
-            event.preventDefault()
-            // get data
-            const countries = await getData('https://restcountries.com/v3.1/all')
-
-            // generate html
-            const basicStatsHTML = generateBasicStatsPerCountryTable(countries)
-            const populationTable = generatePopulationTable(countries)
-            const regionTable = generateRegionTable(countries)
-            const languageTable = generateLanguageTable(countries)
-
-            // render html
-            renderBasicStatsPerCountryTable(basicStatsHTML)
-            renderPopulationTable(populationTable)
-            renderRegionTable(regionTable)
-            renderLanguageTable(languageTable)
-
-        } catch (e) {
-            console.warn(e)
-        }
+        event.preventDefault()
+        await handleCountryData('https://restcountries.com/v3.1/all')
     })
 })()
